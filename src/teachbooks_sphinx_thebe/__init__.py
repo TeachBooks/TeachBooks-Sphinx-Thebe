@@ -10,6 +10,8 @@ from docutils.parsers.rst import Directive
 from docutils import nodes
 from sphinx.util import logging
 import shutil
+import sysconfig 
+# import src.teachbooks_sphinx_thebe.build_hook as overwrite_files
 
 from wcmatch import glob
 
@@ -347,6 +349,23 @@ def copy_over_files(app, exception):
         ),
     )
 
+def overwrite_files():
+    site_packages = sysconfig.get_paths()["purelib"]
+    sphinx_thebe_path = os.path.join(site_packages, "sphinx_thebe")
+    teachbooks_path = os.path.dirname(__file__)  # Dynamically gets the package location
+    print("---------------")
+    print("teachbooks path: ", teachbooks_path, ", sphinx thebe path: ", sphinx_thebe_path)
+    print("---------------")
+    if os.path.exists(sphinx_thebe_path):
+        shutil.rmtree(sphinx_thebe_path)
+
+    if not teachbooks_path:
+        print("Couldn't find teachbooks path!")
+        return
+
+    shutil.move(teachbooks_path, sphinx_thebe_path)
+    print("Files overwritten successfully!")
+
 
 def setup(app):
     logger.verbose("Adding copy buttons to code blocks...")
@@ -387,6 +406,8 @@ def setup(app):
         man=(skip, None),
         override=True,
     )
+
+    overwrite_files()
 
     return {
         "version": __version__,
