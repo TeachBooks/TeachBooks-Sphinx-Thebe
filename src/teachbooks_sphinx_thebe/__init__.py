@@ -10,8 +10,6 @@ from docutils.parsers.rst import Directive
 from docutils import nodes
 from sphinx.util import logging
 import shutil
-import sysconfig 
-# import src.teachbooks_sphinx_thebe.build_hook as overwrite_files
 
 from wcmatch import glob
 
