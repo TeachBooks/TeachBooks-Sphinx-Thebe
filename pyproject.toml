@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling", "hatch-vcs", "setuptools"]
 build-backend = "hatchling.build"
 
 [project]
@@ -73,3 +73,6 @@ build.hooks.vcs.version-file = "src/teachbooks_sphinx_thebe/_version.py"
 testpaths = [
     "tests",
 ]
+
+[tool.setuptools.commands]
+install = "teachbooks_sphinx_thebe.build_hook:PostInstallCommand"
