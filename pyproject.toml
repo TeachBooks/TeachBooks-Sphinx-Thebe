@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling", "hatch-vcs", "setuptools>=61.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -41,8 +41,8 @@ dependencies = [
     "wcmatch==8.5"
 ]
 
-[project.urls]
-Homepage = "https://github.com/executablebooks/sphinx-thebe"
+#[project.urls]
+#Homepage = "https://github.com/executablebooks/sphinx-thebe"
 
 [project.optional-dependencies]
 sphinx = [
@@ -73,3 +73,6 @@ build.hooks.vcs.version-file = "src/teachbooks_sphinx_thebe/_version.py"
 testpaths = [
     "tests",
 ]
+
+[tool.hatch.build.hooks.custom]
+path = "src/teachbooks_sphinx_thebe/build_hook.py"
