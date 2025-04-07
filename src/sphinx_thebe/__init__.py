@@ -178,7 +178,8 @@ def update_thebe_context(app, doctree, docname):
                 "mode": "{cm_language}"
             }},
             "mountRestartButton": false,
-            "mountRestartallButton": false
+            "mountRestartallButton": false,
+            "mathjaxUrl": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
         }}
         </script>
         """
