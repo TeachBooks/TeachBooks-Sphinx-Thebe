@@ -1,5 +1,5 @@
 *For IT2901 evaluation:* 
-The only change we have made to the original repo made by TeachBooks (), is to add the configuration `"mathjaxUrl": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"` to lines 48 and 182 in `src/sphinx_thebe/__init__.py`.
+The only change we have made to the original repo made by TeachBooks (https://github.com/TeachBooks/Sphinx-Thebe), is to add the configuration `"mathjaxUrl": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"` to lines 48 and 182 in `src/sphinx_thebe/__init__.py`.
 
 # sphinx-thebe
 
