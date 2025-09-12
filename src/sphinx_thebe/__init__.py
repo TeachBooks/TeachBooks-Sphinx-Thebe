@@ -49,6 +49,7 @@ def init_thebe_default_config(app, env, docnames):
         "selector_output": ".output, .cell_output",
         "use_thebe_lite": False,
         "exclude_patterns": [],
+        "mathjaxUrl": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
     }
     for key, val in defaults.items():
         if key not in thebe_config:
@@ -208,7 +209,8 @@ def update_thebe_context(app, doctree, docname):
                 "mode": "{cm_language}"
             }},
             "mountRestartButton": false,
-            "mountRestartallButton": false
+            "mountRestartallButton": false,
+            "mathjaxUrl": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
         }}
         </script>
         """
