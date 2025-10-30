@@ -178,6 +178,24 @@ def update_thebe_context(app, doctree, docname):
         else:
             kernel_name = "python3"
 
+    # Inject matplotlib patch initialization cell for Python kernels when using thebe-lite. Patches: https://github.com/TeachBooks/TeachBooks-Sphinx-Thebe/issues/8
+    if config_thebe.get("use_thebe_lite", False) and "python" in kernel_name.lower():
+        matplotlib_patch_code = """# Matplotlib compatibility patch for Pyodide
+import matplotlib
+if not hasattr(matplotlib.RcParams, "_get"):
+    matplotlib.RcParams._get = dict.get"""
+        
+        # Create a hidden initialization cell with the patch
+        # This cell will auto-execute but remain hidden from users
+        matplotlib_patch_html = f"""
+<div class="cell docutils container tag_thebe-remove-input-init">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre>{matplotlib_patch_code}</pre>
+</div></div></div></div>"""
+        
+        # Insert the patch cell at the beginning of the document
+        doctree.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
+
     # Codemirror syntax
     cm_language = kernel_name
     if "python" in cm_language:
