@@ -179,7 +179,11 @@ def update_thebe_context(app, doctree, docname):
             kernel_name = "python3"
 
     # Inject matplotlib patch initialization cell for Python kernels when using thebe-lite. Patches: https://github.com/TeachBooks/TeachBooks-Sphinx-Thebe/issues/8
-    if config_thebe.get("use_thebe_lite", False) and "python" in kernel_name.lower():
+    # Check if this is a Python kernel (matches: python, python3, ipython, conda-base-py, etc.)
+    kernel_name_lower = kernel_name.lower()
+    is_python_kernel = "python" in kernel_name_lower or kernel_name_lower.startswith("py") or "-py" in kernel_name_lower or kernel_name_lower.startswith("ipy")
+    
+    if config_thebe.get("use_thebe_lite", False) and is_python_kernel:
         matplotlib_patch_code = """# Matplotlib compatibility patch for Pyodide
 import matplotlib
 if not hasattr(matplotlib.RcParams, "_get"):
