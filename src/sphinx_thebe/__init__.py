@@ -219,7 +219,7 @@ if not hasattr(matplotlib.RcParams, "_get"):
 </div></div></div></div>"""
         
         # Insert the patch cell at the beginning of the document
-        doctree.insert(0, nodes.raw(text=matplotlib_patch_code, format="html"))
+        doctree.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
 
     # Codemirror syntax
     cm_language = kernel_name
