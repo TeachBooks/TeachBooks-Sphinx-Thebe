@@ -198,28 +198,9 @@ def update_thebe_context(app, doctree, docname):
         else:
             kernel_name = "python3"
 
-    # Inject matplotlib patch initialization cell for Python kernels when using thebe-lite. Patches: https://github.com/TeachBooks/TeachBooks-Sphinx-Thebe/issues/8
-    # Only inject if the page actually has thebe-compatible cells
-    # Check if this is a Python kernel (matches: python, python3, ipython, conda-base-py, etc.)
+    # Check if this is a Python kernel (for later matplotlib patch injection)
     kernel_name_lower = kernel_name.lower()
     is_python_kernel = "python" in kernel_name_lower or kernel_name_lower.startswith("py") or "-py" in kernel_name_lower or kernel_name_lower.startswith("ipy")
-    
-    if config_thebe.get("use_thebe_lite", False) and is_python_kernel and _has_thebe_cells(doctree):
-        # Minimal patch code without comments to reduce search noise
-        matplotlib_patch_code = """import matplotlib
-if not hasattr(matplotlib.RcParams, "_get"):
-    matplotlib.RcParams._get = dict.get"""
-        
-        # Create a hidden initialization cell with the patch
-        # This cell will auto-execute but remain hidden from users
-        matplotlib_patch_html = f"""
-<div class="cell docutils container tag_thebe-remove-input-init">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre>{matplotlib_patch_code}</pre>
-</div></div></div></div>"""
-        
-        # Insert the patch cell at the beginning of the document
-        doctree.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
 
     # Codemirror syntax
     cm_language = kernel_name
@@ -292,6 +273,32 @@ if not hasattr(matplotlib.RcParams, "_get"):
     doctree.append(
         nodes.raw(text=f"<script>kernelName = '{kernel_name}'</script>", format="html")
     )
+    
+    # Inject matplotlib patch at the start but inside content to avoid button placement issues
+    # Patches: https://github.com/TeachBooks/TeachBooks-Sphinx-Thebe/issues/8
+    if config_thebe.get("use_thebe_lite", False) and is_python_kernel and _has_thebe_cells(doctree):
+        # Minimal patch code without comments to reduce search noise
+        matplotlib_patch_code = """import matplotlib
+if not hasattr(matplotlib.RcParams, "_get"):
+    matplotlib.RcParams._get = dict.get"""
+        
+        # Create a hidden initialization cell with the patch
+        # This cell will auto-execute but remain hidden from users
+        matplotlib_patch_html = f"""
+<div class="cell docutils container tag_thebe-remove-input-init">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre>{matplotlib_patch_code}</pre>
+</div></div></div></div>"""
+        
+        # Find the first section node and insert at its beginning
+        # This ensures it's inside the content section, not before it
+        for node in doctree.traverse(nodes.section):
+            # Insert as the first child of the first section
+            node.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
+            break
+        else:
+            # Fallback: if no section found, append to doctree
+            doctree.append(nodes.raw(text=matplotlib_patch_html, format="html"))
 
 
 def _split_repo_url(url):
