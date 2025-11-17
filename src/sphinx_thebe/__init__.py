@@ -67,6 +67,26 @@ def _bool(b):
         return b in ["true", "True"]
 
 
+def _has_thebe_cells(doctree):
+    """Check if the doctree contains any Thebe-compatible cells."""
+    if not doctree:
+        return False
+    
+    # Check for container nodes with 'cell' class (from jupyter notebooks)
+    # or literal_block nodes with 'thebe' class (from code-blocks with :class: thebe)
+    for node in doctree.traverse():
+        # Check for Jupyter notebook cells
+        if isinstance(node, nodes.container):
+            if 'cell' in node.get('classes', []):
+                return True
+        # Check for code blocks with thebe class
+        if isinstance(node, nodes.literal_block):
+            if 'thebe' in node.get('classes', []):
+                return True
+    
+    return False
+
+
 def _do_load_thebe(doctree, config_thebe):
     """Decide whether to load thebe based on the page's context."""
     # No doctree means there's no page content at all
@@ -179,26 +199,27 @@ def update_thebe_context(app, doctree, docname):
             kernel_name = "python3"
 
     # Inject matplotlib patch initialization cell for Python kernels when using thebe-lite. Patches: https://github.com/TeachBooks/TeachBooks-Sphinx-Thebe/issues/8
+    # Only inject if the page actually has thebe-compatible cells
     # Check if this is a Python kernel (matches: python, python3, ipython, conda-base-py, etc.)
     kernel_name_lower = kernel_name.lower()
     is_python_kernel = "python" in kernel_name_lower or kernel_name_lower.startswith("py") or "-py" in kernel_name_lower or kernel_name_lower.startswith("ipy")
     
-    if config_thebe.get("use_thebe_lite", False) and is_python_kernel:
+    if config_thebe.get("use_thebe_lite", False) and is_python_kernel and _has_thebe_cells(doctree):
         matplotlib_patch_code = """# Matplotlib compatibility patch for Pyodide
 import matplotlib
 if not hasattr(matplotlib.RcParams, "_get"):
     matplotlib.RcParams._get = dict.get"""
         
         # Create a hidden initialization cell with the patch
-        # This cell will auto-execute but remain hidden from users
+        # This cell will auto-execute but remain hidden from users and search indexing
         matplotlib_patch_html = f"""
-<div class="cell docutils container tag_thebe-remove-input-init">
+<div class="cell docutils container tag_thebe-remove-input-init" style="display: none;" aria-hidden="true">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre>{matplotlib_patch_code}</pre>
 </div></div></div></div>"""
         
         # Insert the patch cell at the beginning of the document
-        doctree.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
+        doctree.insert(0, nodes.raw(text=matplotlib_patch_code, format="html"))
 
     # Codemirror syntax
     cm_language = kernel_name
