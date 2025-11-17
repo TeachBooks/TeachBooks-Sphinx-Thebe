@@ -205,15 +205,15 @@ def update_thebe_context(app, doctree, docname):
     is_python_kernel = "python" in kernel_name_lower or kernel_name_lower.startswith("py") or "-py" in kernel_name_lower or kernel_name_lower.startswith("ipy")
     
     if config_thebe.get("use_thebe_lite", False) and is_python_kernel and _has_thebe_cells(doctree):
-        matplotlib_patch_code = """# Matplotlib compatibility patch for Pyodide
-import matplotlib
+        # Minimal patch code without comments to reduce search noise
+        matplotlib_patch_code = """import matplotlib
 if not hasattr(matplotlib.RcParams, "_get"):
     matplotlib.RcParams._get = dict.get"""
         
         # Create a hidden initialization cell with the patch
-        # This cell will auto-execute but remain hidden from users and search indexing
+        # This cell will auto-execute but remain hidden from users
         matplotlib_patch_html = f"""
-<div class="cell docutils container tag_thebe-remove-input-init" style="display: none;" aria-hidden="true">
+<div class="cell docutils container tag_thebe-remove-input-init">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre>{matplotlib_patch_code}</pre>
 </div></div></div></div>"""
