@@ -407,16 +407,6 @@ var initThebe = async () => {
     document.querySelector(".thebe-launch-button")
   );
 
-  // Remove any extra empty thebe-launch-button elements that may have been auto-generated
-  // Keep only the one we just moved to the header
-  const allButtons = document.querySelectorAll(".thebe-launch-button");
-  allButtons.forEach((button, index) => {
-    // Skip the first button (the one in the header)
-    if (index > 0 && button.innerText.trim() === "") {
-      button.remove();
-    }
-  });
-
   console.log("[sphinx-thebe]: Loading thebe...");
   document.querySelector(".thebe-launch-button ").innerText = thebeLoadingThebe;
 
@@ -488,6 +478,16 @@ var initThebe = async () => {
   updateThebeButtonStatus(thebePythonReady, false);
 
   moveHideInputOutput();
+  
+  // Clean up any extra empty launch buttons that may have been created
+  // This removes auto-generated buttons from the theme
+  const allButtons = document.querySelectorAll(".thebe-launch-button");
+  allButtons.forEach((button, index) => {
+    // Keep only the first button (in the header), remove empty extras
+    if (index > 0) {
+      button.remove();
+    }
+  });
 };
 
 // Helper function to munge the language name
