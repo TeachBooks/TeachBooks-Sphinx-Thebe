@@ -407,6 +407,16 @@ var initThebe = async () => {
     document.querySelector(".thebe-launch-button")
   );
 
+  // Remove any extra empty thebe-launch-button elements that may have been auto-generated
+  // Keep only the one we just moved to the header
+  const allButtons = document.querySelectorAll(".thebe-launch-button");
+  allButtons.forEach((button, index) => {
+    // Skip the first button (the one in the header)
+    if (index > 0 && button.innerText.trim() === "") {
+      button.remove();
+    }
+  });
+
   console.log("[sphinx-thebe]: Loading thebe...");
   document.querySelector(".thebe-launch-button ").innerText = thebeLoadingThebe;
 
