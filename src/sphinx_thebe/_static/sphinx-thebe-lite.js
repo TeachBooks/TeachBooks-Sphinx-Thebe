@@ -478,6 +478,16 @@ var initThebe = async () => {
   updateThebeButtonStatus(thebePythonReady, false);
 
   moveHideInputOutput();
+  
+  // Clean up any extra empty launch buttons that may have been created
+  // This removes auto-generated buttons from the theme
+  const allButtons = document.querySelectorAll(".thebe-launch-button");
+  allButtons.forEach((button, index) => {
+    // Keep only the first button (in the header), remove empty extras
+    if (index > 0) {
+      button.remove();
+    }
+  });
 };
 
 // Helper function to munge the language name
