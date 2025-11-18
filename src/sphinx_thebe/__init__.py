@@ -297,8 +297,8 @@ if not hasattr(matplotlib.RcParams, "_get"):
             node.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
             break
         else:
-            # Fallback: if no section found, append to doctree
-            doctree.append(nodes.raw(text=matplotlib_patch_html, format="html"))
+            # Fallback: if no section found, insert at top of doctree
+            doctree.insert(0, nodes.raw(text=matplotlib_patch_html, format="html"))
 
 
 def _split_repo_url(url):
